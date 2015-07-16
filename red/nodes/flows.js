@@ -71,6 +71,10 @@ var flowNodes = module.exports = {
     get: function(i) {
         return activeFlow.getNode(i);
     },
+
+    setActiveFlow: function(flow) {
+        activeFlow = flow;
+    },
     
     eachNode: function(cb) {
         activeFlow.eachNode(cb);

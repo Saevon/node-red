@@ -127,6 +127,10 @@ var localfilesystem = {
 
         var promises = [];
 
+        if (settings.noFileSystem) {
+            return;
+        }
+
         if (!settings.userDir) {
             if (fs.existsSync(fspath.join(process.env.NODE_RED_HOME,".config.json"))) {
                 settings.userDir = process.env.NODE_RED_HOME;
@@ -184,6 +188,10 @@ var localfilesystem = {
     },
 
     getFlows: function() {
+        if (settings.noFileSystem) {
+            return when.resolve(settings.flowData);
+        }
+
         return when.promise(function(resolve) {
             log.info(log._("storage.localfilesystem.user-dir",{path:settings.userDir}));
             log.info(log._("storage.localfilesystem.flows-file",{path:flowsFullPath}));
@@ -216,6 +224,10 @@ var localfilesystem = {
     },
 
     getCredentials: function() {
+        if (settings.noFileSystem) {
+            return when.resolve(settings.credentialData);
+        }
+
         return when.promise(function(resolve) {
             fs.exists(credentialsFile, function(exists) {
                 if (exists) {
@@ -251,6 +263,10 @@ var localfilesystem = {
     },
 
     getSettings: function() {
+        if (settings.noFileSystem) {
+            return when.resolve(settings.settingsData);
+        }
+
         if (fs.existsSync(globalSettingsFile)) {
             return nodeFn.call(fs.readFile,globalSettingsFile,'utf8').then(function(data) {
                 if (data) {

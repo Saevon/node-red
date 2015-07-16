@@ -26,13 +26,20 @@ var settings;
 
 function init(_settings) {
     settings = _settings;
-    loader.init(settings);
+
+    if (!settings.noFileSystem) {
+        loader.init(settings);
+    }
     registry.init(settings,loader);
 }
 //TODO: defaultNodesDir/disableNodePathScan are to make testing easier.
 //      When the tests are componentized to match the new registry structure,
 //      these flags belong on localfilesystem.load, not here.
 function load(defaultNodesDir,disableNodePathScan) {
+    if (settings.noFileSystem) {
+        return when.resolve({});
+    }
+
     return loader.load(defaultNodesDir,disableNodePathScan);
 }
 
