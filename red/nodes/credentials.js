@@ -18,7 +18,14 @@ var when = require("when");
 
 var log = require("../log");
 
-//var needsPermission = require("../api/auth").needsPermission;
+// Temporary Browser check
+// Note: doesn't work :(
+if (typeof exports !== 'undefined' && this.exports !== exports) {
+    console.log('Browser?');
+    var needsPermission = require('../api/auth/fake-passport').needsPermission;
+} else {
+    var needsPermission = require("../api/auth").needsPermission;
+}
 
 var credentialCache = {};
 var storage = null;

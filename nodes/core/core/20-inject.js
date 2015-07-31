@@ -18,7 +18,26 @@ module.exports = function(RED) {
     "use strict";
     var cron = require("cron");
 
+    // DEBUG CODE:
+    var injects = {};
+    if (window === undefined) {
+        var window = {};
+    }
+    window.nodeRedInject = function(name) {
+        if (!name) {
+            return injects;
+        }
+
+        var node = injects[name];
+        if (!node) {
+            return;
+        }
+
+        node.emit("input", {});
+    };
+
     function InjectNode(n) {
+
         RED.nodes.createNode(this,n);
         this.topic = n.topic;
         this.payload = n.payload;
@@ -49,6 +68,11 @@ module.exports = function(RED) {
             setTimeout( function(){ node.emit("input",{}); }, 100);
         }
 
+        // DEBUG CODE:
+        if (n.name) {
+            injects[n.name] = this;
+        }
+
         this.on("input",function(msg) {
             var msg = {topic:this.topic};
             if ( (this.payloadType == null && this.payload === "") || this.payloadType === "date") {
@@ -76,18 +100,18 @@ module.exports = function(RED) {
         }
     }
 
-    //RED.httpAdmin.post("/inject/:id", RED.auth.needsPermission("inject.write"), function(req,res) {
-    //    var node = RED.nodes.getNode(req.params.id);
-    //    if (node != null) {
-    //        try {
-    //            node.receive();
-    //            res.send(200);
-    //        } catch(err) {
-    //            res.send(500);
-    //            node.error(RED._("inject.failed",{error:err.toString()}));
-    //        }
-    //    } else {
-    //        res.send(404);
-    //    }
-    //});
+    RED.httpAdmin.post("/inject/:id", RED.auth.needsPermission("inject.write"), function(req,res) {
+        var node = RED.nodes.getNode(req.params.id);
+        if (node != null) {
+            try {
+                node.receive();
+                res.send(200);
+            } catch(err) {
+                res.send(500);
+                node.error(RED._("inject.failed",{error:err.toString()}));
+            }
+        } else {
+            res.send(404);
+        }
+    });
 }
