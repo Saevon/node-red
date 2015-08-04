@@ -18,7 +18,26 @@ module.exports = function(RED) {
     "use strict";
     var cron = require("cron");
 
+    // DEBUG CODE:
+    var injects = {};
+    if (window === undefined) {
+        var window = {};
+    }
+    window.nodeRedInject = function(name) {
+        if (!name) {
+            return injects;
+        }
+
+        var node = injects[name];
+        if (!node) {
+            return;
+        }
+
+        node.emit("input", {});
+    };
+
     function InjectNode(n) {
+
         RED.nodes.createNode(this,n);
         this.topic = n.topic;
         this.payload = n.payload;
@@ -47,6 +66,11 @@ module.exports = function(RED) {
 
         if (this.once) {
             setTimeout( function(){ node.emit("input",{}); }, 100);
+        }
+
+        // DEBUG CODE:
+        if (n.name) {
+            injects[n.name] = this;
         }
 
         this.on("input",function(msg) {
