@@ -18,7 +18,19 @@ var when = require("when");
 
 var log = require("../log");
 
-//var needsPermission = require("../api/auth").needsPermission;
+// TODO: needs better way to swap file in browser (perhaps a browser shim?)
+var isBrowser;
+try {
+    isBrowser = (window !== undefined);
+} catch(e) {
+    isBrowser = false;
+}
+
+if (isBrowser) {
+    var needsPermission = require("../api/auth/fake-passport").needsPermission;
+} else {
+    var needsPermission = require("../api/auth").needsPermission;
+}
 
 var credentialCache = {};
 var storage = null;
