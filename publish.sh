@@ -68,7 +68,7 @@ check_exit "echo 'grunt build failed'"
 # Commit
 echo "Releasing"
 git add -f public
-git commit -m "Releasing ${stamp}"
+git commit -m "Releasing ${stamp} from branch ${branch}"
 git push -f origin $TMP_RELEASE:$RELEASE
 
 # The exit script will run here
